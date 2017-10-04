@@ -1,0 +1,34 @@
+module myfsm (
+    input clk,  // clock
+    input rst,  // reset
+    input dipsw, // dipswitch to control the state
+    output toled [3]
+  ) {
+
+ 
+  .clk(clk) {
+    .rst(rst) {
+      fsm state = {IDLE,COUNTER};
+      counter ctr (#SIZE(3), #TOP(7),#DIV(25));
+    }
+    
+  }
+ 
+ 
+  always {
+    toled = ctr.value;
+    case (state.q) {
+      state.IDLE: 
+        toled = 7;
+        if (dipsw){
+          state.d = state.COUNTER;         
+        }
+    
+      state.COUNTER:
+        toled = ctr.value;   
+        if (!dipsw)
+          state.d = state.IDLE;
+    
+    }
+  }
+}
